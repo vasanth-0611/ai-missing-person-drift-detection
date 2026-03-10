@@ -52,7 +52,8 @@ for i in range(len(df)):
         columns=["speed","heart_rate"]
     )
 
-    prediction = model.predict(features)
+    prediction = model.predict(
+    scaler.transform([[row["latitude"], row["longitude"]]]))
 
     # geofence check
     outside, distance = check_geofence(
