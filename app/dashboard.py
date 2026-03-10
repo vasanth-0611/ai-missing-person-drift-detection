@@ -44,7 +44,11 @@ for i in range(len(df)):
 
     live_data = df.iloc[:i+1]
 
-    map_placeholder.map(live_data.rename(columns={"latitude": "lat", "longitude": "lon"})[["lat","lon"]])
+    map_placeholder.map(
+    pd.DataFrame({
+        "lat":[row["latitude"]],
+        "lon":[row["longitude"]]
+    }))
 
     features = [[row["latitude"], row["longitude"]]]
 
@@ -54,9 +58,14 @@ for i in range(len(df)):
 
     route_deviation = detect_route_deviation(i)
 
-    risk = calculate_risk(prediction, outside, route_deviation)
+    home_lat = 12.9716
+    home_lon = 77.5946
 
-    risk_placeholder.write(f"Risk Score: {risk}/100")
+    distance = abs(row["latitude"] - home_lat) + abs(row["longitude"] - home_lon)
+
+    risk = int(min(distance * 10000, 100))
+
+    
 
     if prediction == -1 or outside or route_deviation:
 
