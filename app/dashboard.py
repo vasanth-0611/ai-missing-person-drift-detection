@@ -44,9 +44,9 @@ for i in range(len(df)):
 
     live_data = df.iloc[:i+1]
 
-    map_placeholder.map(live_data[["latitude","longitude"]])
+    map_placeholder.map(live_data.rename(columns={"latitude": "lat", "longitude": "lon"})[["lat","lon"]])
 
-    features = [[row["latitude"], row["longitude"]]]
+    features = [[row["lat"], row["lon"]]]
 
     prediction = model.predict(features)
 
