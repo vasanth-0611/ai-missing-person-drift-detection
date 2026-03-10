@@ -40,46 +40,30 @@ risk_placeholder = st.empty()
 
 for i in range(len(df)):
 
-    live_data = df.iloc[i:i+1]
+    row = df.iloc[i]
+
+    live_data = df.iloc[:i+1]
 
     map_placeholder.map(live_data[["latitude","longitude"]])
 
-    row = df.iloc[i]
+    features = [[row["latitude"], row["longitude"]]]
 
-    # anomaly model
-    features = pd.DataFrame(
-        [[row["latitude"],row["longitude"]]],
-        columns=["latitude","longitude"]
-    )
+    prediction = model.predict(features)
 
-    prediction = model.predict([[row["latitude"], row["longitude"]]])
+    outside, distance = check_geofence(row["latitude"], row["longitude"])
 
-    # geofence check
-    outside, distance = check_geofence(
-        row["latitude"],
-        row["longitude"]
-    )
     route_deviation = detect_route_deviation(i)
 
-    # risk score
-    risk = calculate_risk(
-        row["latitude"],
-        row["longitude"],
-        outside
-    )
-    risk_placeholder.write(f"Risk Score: {risk}")
-
-    if prediction == -1 or outside or route_deviation or risk > 0.5:
-        alert_placeholder.error("⚠ WANDERING RISK DETECTED")
-        location = f"{row['latitude']},{row['longitude']}"
-        
-        #send_alert(location, risk)
-
-    else:
-        alert_placeholder.success("SAFE")
-    if route_deviation:
-        st.warning("⚠ ROUTE DEVIATION DETECTED")
+    risk = calculate_risk(prediction, outside, route_deviation)
 
     risk_placeholder.write(f"Risk Score: {risk}/100")
+
+    if prediction == -1 or outside or route_deviation:
+
+        alert_placeholder.error("⚠ WANDERING RISK DETECTED")
+
+    else:
+
+        alert_placeholder.success("SAFE")
 
     time.sleep(1)
