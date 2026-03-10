@@ -64,6 +64,7 @@ for i in range(len(df)):
     distance = abs(row["latitude"] - home_lat) + abs(row["longitude"] - home_lon)
 
     risk = int(min(distance * 10000, 100))
+    risk_placeholder.write(f"Risk Score: {risk}/100")
 
     
 
