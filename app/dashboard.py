@@ -68,12 +68,13 @@ for i in range(len(df)):
 
     
 
-    if prediction == -1 or outside or route_deviation:
-
+    if risk > 60:
         alert_placeholder.error("⚠ WANDERING RISK DETECTED")
 
-    else:
+    elif risk > 30:
+        alert_placeholder.warning("⚠ Suspicious Movement")
 
+    else:
         alert_placeholder.success("SAFE")
 
     time.sleep(1)
